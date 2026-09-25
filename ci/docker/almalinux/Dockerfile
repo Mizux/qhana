@@ -1,0 +1,35 @@
+# Create a virtual environment with all tools installed
+# ref: https://hub.docker.com/_/almalinux
+FROM almalinux:latest AS env
+
+# Install system build dependencies
+ENV PATH=/usr/local/bin:$PATH
+RUN dnf -y update \
+&& dnf -y install git wget openssl-devel cmake \
+&& dnf -y group install "Development Tools" \
+&& dnf clean all \
+&& rm -rf /var/cache/dnf
+
+RUN dnf -y update \
+&& dnf -y install qt6-qtbase-devel qt6-qtcharts-devel \
+&& dnf clean all \
+&& rm -rf /var/cache/dnf
+
+CMD [ "/usr/bin/bash" ]
+
+# Add the library src to our build env
+FROM env AS devel
+WORKDIR /home/project
+COPY . .
+
+ARG CMAKE_BUILD_PARALLEL_LEVEL
+ENV CMAKE_BUILD_PARALLEL_LEVEL=${CMAKE_BUILD_PARALLEL_LEVEL:-4}
+
+FROM devel AS build
+RUN cmake --version
+RUN cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release
+RUN cmake --build build --target all -v
+RUN cmake --build build --target install -v
+
+FROM build AS test
+RUN CTEST_OUTPUT_ON_FAILURE=1 cmake --build build --target test -v

@@ -1,0 +1,32 @@
+# Create a virtual environment with all tools installed
+# ref: https://hub.docker.com/r/opensuse/tumbleweed
+FROM opensuse/tumbleweed AS env
+
+# Install system build dependencies
+ENV PATH=/usr/local/bin:$PATH
+RUN zypper refresh \
+&& zypper install -y git gcc gcc-c++ cmake \
+&& zypper clean -a
+
+RUN zypper refresh \
+&& zypper install -y qt6-base-devel qt6-charts-devel \
+&& zypper clean -a
+
+ENV CC=gcc CXX=g++
+
+# Add the library src to our build env
+FROM env AS devel
+WORKDIR /home/project
+COPY . .
+
+ARG CMAKE_BUILD_PARALLEL_LEVEL
+ENV CMAKE_BUILD_PARALLEL_LEVEL=${CMAKE_BUILD_PARALLEL_LEVEL:-4}
+
+FROM devel AS build
+RUN cmake --version
+RUN cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release
+RUN cmake --build build --target all -v
+RUN cmake --build build --target install -v
+
+FROM build AS test
+RUN CTEST_OUTPUT_ON_FAILURE=1 cmake --build build --target test -v
