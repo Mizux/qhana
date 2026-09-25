@@ -1,0 +1,36 @@
+# Project Files unneeded by docker
+.dockerignore
+
+.git
+.gitignore
+.github
+.clang-format
+
+AUTHORS
+CONTRIBUTING.md
+CONTRIBUTORS
+LICENSE
+README.md
+docs
+
+# CI
+ci/Makefile
+ci/docker
+ci/docs
+ci/cache
+
+# Native build
+.cache/
+build/
+build*/
+cache/
+compile_commands.json
+export/
+
+# Editors
+.kdev4/
+*.kdev4
+*.swp
+*.user
+.vs/
+.vscode/
