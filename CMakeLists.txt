@@ -78,5 +78,5 @@ set_property(GLOBAL PROPERTY CTEST_TARGETS_ADDED 1)
 include(CTest)
 
 add_subdirectory(libqhana)
-#add_subdirectory(app)
+add_subdirectory(app)
 #add_subdirectory(tui)

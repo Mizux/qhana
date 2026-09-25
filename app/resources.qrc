@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="/">
+    <file alias="gfx/cards.bmp">../data/gfx/cards.bmp</file>
+    <file alias="gfx/back.bmp">../data/gfx/back.bmp</file>
+  </qresource>
+</RCC>
